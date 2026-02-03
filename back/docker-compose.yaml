@@ -1,0 +1,44 @@
+name: back
+
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - back_rabbit
+      - back_redis
+    environment:
+      RABBIT_HOST: back_rabbit
+      RABBIT_PORT: 5672
+      REDIS_HOST: back_redis
+      REDIS_PORT: 6379
+
+  back_rabbit:
+    image: rabbitmq:3.10.7-management
+    container_name: back_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: always
+
+  back_redis:
+    image: redis:7-alpine
+    container_name: back_redis
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --appendonly yes
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  rabbitmq_data:
