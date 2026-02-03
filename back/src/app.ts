@@ -42,8 +42,8 @@ export function createApp() {
   app.patch('/', async (req: Request, res: Response) => {
     const { from, to, name } = req.body
 
-    if (!from || !to || !name) {
-      res.json({ status: 'error' })
+    if (name !== 'left' && name !== 'right') {
+      res.status(400).json({ error: 'Wrong name' })
       return
     }
 
